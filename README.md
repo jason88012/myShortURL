@@ -124,6 +124,12 @@ $ sudo service nginx restart
 ```
 Now Nginx server will start to listen port 80 and forward request to uWSGI interface.
 
+### 5. Check Firewall
+Don't forget to open your firewall to accept port80 request.
+```
+$ sudo ufw allow http
+```
+
 ## Usage
 ### Short a URL
 ```
