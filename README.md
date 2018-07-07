@@ -24,26 +24,6 @@ Use `apt-get` to install
 $ sudo apt-get update
 $ sudo apt-get install nginx
 ```
-Modify the Nginx server configuration file with
-```
-$ sudo nano /etc/nginx/sites-available/default
-```
-Assume your public IP is `1.2.3.4` and the project is in `/home/myShortUrl`, Here is the configuration file `default` should looks like.
-```
-server { 
-    listen 80 default;
-    server_name 1.2.3.4;
-    location / { 
-        include uwsgi_params;
-        uwsgi_pass unix:/tmp/short_url.sock;
-        uwsgi_param UWSGI_PYHOME /home/myShortUrl/env; 
-        uwsgi_param UWSGI_CHDIR /home/myShortUrl;
-        uwsgi_param UWSGI_SCRIPT uwsgi_server:app;
-  }
-}
-```
-Notice that every directory shoud use absolute path.
-
 
 ## Python Package Requirement
 * [Redis](https://github.com/andymccurdy/redis-py)
@@ -118,7 +98,27 @@ die-on-term = true
 Notice that every directory shoud use absolute path.
 
 ### 4. Activate Nginx Service
-Activate Nginx with:
+Modify the Nginx server configuration file with
+```
+$ sudo nano /etc/nginx/sites-available/default
+```
+Assume your public IP is `1.2.3.4` and the project is in `/home/myShortUrl`, Here is the configuration file `default` should looks like.
+```
+server { 
+    listen 80 default;
+    server_name 1.2.3.4;
+    location / { 
+        include uwsgi_params;
+        uwsgi_pass unix:/tmp/short_url.sock;
+        uwsgi_param UWSGI_PYHOME /home/myShortUrl/env; 
+        uwsgi_param UWSGI_CHDIR /home/myShortUrl;
+        uwsgi_param UWSGI_SCRIPT uwsgi_server:app;
+  }
+}
+```
+Notice that every directory shoud use absolute path.
+
+After configuration, activate Nginx with:
 ```
 $ sudo service nginx restart
 ```
