@@ -14,6 +14,8 @@ $ wget http://download.redis.io/redis-stable.tar.gz
 $ tar xvzf redis-stable.tar.gz
 $ cd redis-stable
 $ make
+$ make test
+$ sudo make install
 ```
 Modify the Redis configuration file with
 ```
@@ -64,7 +66,7 @@ $ source env/bin/activate
 ```
 Install relative package.
 ```
-$ pip install requirement.txt
+$ pip install -r requirement.txt
 ```
 
 ## Start the Server
