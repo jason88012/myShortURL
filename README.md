@@ -58,7 +58,7 @@ Notice that every directory shoud use absolute path.
 ### Package Installation
 Setup the virtualenv.
 ```
-$ virtualenv env
+$ virtualenv -p python3 env
 ```
 Start the virtualenv.
 ```
