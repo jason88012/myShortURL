@@ -20,6 +20,14 @@ def check_url(url):
 				"Error_msg":"Please use correct protocol such as 'http', 'https' or 'ftp'."}
 	return True
 
+def check_url_loop(url_key, url):
+	parsed_url = parse.urlparse(url.decode())
+	url_path = parsed_url.path.replace("/", "")
+	server_domain = SERVER_URL_PREFIX.replace(":", "").replace("/", "")
+	if ( server_domain == parsed_url.scheme+parsed_url.netloc and url_path == url_key):
+		return {"State":"Failed", 
+				"Error_msg":"This url %s will redirect to same page" % (SERVER_URL_PREFIX+url_key)}
+	return {"State":"Sucess"}
 
 class urlShortener():
 	def __init__(self):
@@ -77,6 +85,9 @@ class urlShortener():
 						"Info": "The url_key %s is not available, but we generate another key %s for you." % (url_key, new_key), 
 						"short_url":"%s" % (SERVER_URL_PREFIX+new_key)}
 			else:
+				chk_url = check_url_loop(url_key, url)
+				if chk_url["State"] is not "Sucess":
+					return chk_url
 				res = self.set_to_db(url_key, url)
 				if res["State"] is not "Sucess":
 					return res
