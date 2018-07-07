@@ -14,10 +14,8 @@ $ wget http://download.redis.io/redis-stable.tar.gz
 $ tar xvzf redis-stable.tar.gz
 $ cd redis-stable
 $ make
-```
-Modify the Redis configuration file with
-```
-$ sudo nano /etc/redis/redis.conf
+$ make test
+$ sudo make install
 ```
 
 #### Nginx
@@ -26,26 +24,6 @@ Use `apt-get` to install
 $ sudo apt-get update
 $ sudo apt-get install nginx
 ```
-Modify the Nginx server configuration file with
-```
-$ sudo nano /etc/nginx/sites-available/default
-```
-Here is the configuration file `default` should looks like:
-```
-server { 
-    listen 80 default;
-    server_name [public IP or domain name];
-    location / { 
-        include uwsgi_params;
-        uwsgi_pass unix:/tmp/short_url.sock;
-        uwsgi_param UWSGI_PYHOME [directory to project's virtualenv]; 
-        uwsgi_param UWSGI_CHDIR [directory to project];
-        uwsgi_param UWSGI_SCRIPT uwsgi_server:app;
-  }
-}
-```
-Notice that every directory shoud use absolute path.
-
 
 ## Python Package Requirement
 * [Redis](https://github.com/andymccurdy/redis-py)
@@ -56,7 +34,7 @@ Notice that every directory shoud use absolute path.
 ### Package Installation
 Setup the virtualenv.
 ```
-$ virtualenv env
+$ virtualenv -p python3 env
 ```
 Start the virtualenv.
 ```
@@ -64,24 +42,35 @@ $ source env/bin/activate
 ```
 Install relative package.
 ```
-$ pip install requirement.txt
+$ pip install -r requirement.txt
 ```
 
 ## Start the Server
-### 1. Start Redis Sever
+### 1. Change Server Prefix
+Chane the `conf.py`, add your `server_name` in it.
+```
+$ nano util/conf.py
+```
+
+Ex. Assume your public ip is `1.2.3.4`
+```
+SERVER_URL_PREFIX = os.getenv("SERVER_URL_PREFIX", "1.2.3.4")
+```
+
+### 2. Start Redis Sever
 Open another termial window, change directory to project and activate the redis server with:
 ```
 $ redis-server
 ```
 The database dump file will auto save to the current directory.
 
-### 2. Start uWSGI Interface
+### 3. Start uWSGI Interface
 In virtualenv, activate with:
 ```
 $ uwsgi --ini uwsgi.ini
 ```
 You can modify the uWSGI interface configuration with `uwsgi.ini`.
-The `.ini` file should looks like this.
+Assume your project is in `/home/myShortUrl`, the file should looks like this:
 ```
 [uwsgi]
 
@@ -90,13 +79,13 @@ socket=/tmp/short_url.sock
 chmod-socket = 666
 
 # project direction
-chdir=[directory to project]
+chdir=/home/myShortUrl
 
 # virtual environment direction
-home=[directory to project's virtualenv]
+home=/home/myShortUrl/env
 
 # Specify start script
-wsgi-file=[directory to uwsgi_server.py]
+wsgi-file=/home/myShortUrl/uwsgi_server.py
 callable=app
 
 # uWSGI server parameter
@@ -108,12 +97,38 @@ die-on-term = true
 ```
 Notice that every directory shoud use absolute path.
 
-### 3. Activate Nginx Service
-After finished the Nginx configuration, activate with:
+### 4. Activate Nginx Service
+Modify the Nginx server configuration file with
+```
+$ sudo nano /etc/nginx/sites-available/default
+```
+Assume your public IP is `1.2.3.4` and the project is in `/home/myShortUrl`, Here is the configuration file `default` should looks like.
+```
+server { 
+    listen 80 default;
+    server_name 1.2.3.4;
+    location / { 
+        include uwsgi_params;
+        uwsgi_pass unix:/tmp/short_url.sock;
+        uwsgi_param UWSGI_PYHOME /home/myShortUrl/env; 
+        uwsgi_param UWSGI_CHDIR /home/myShortUrl;
+        uwsgi_param UWSGI_SCRIPT uwsgi_server:app;
+  }
+}
+```
+Notice that every directory shoud use absolute path.
+
+After configuration, activate Nginx with:
 ```
 $ sudo service nginx restart
 ```
-Now Nginx server will start to listen port 80's request and forward to uWSGI interface.
+Now Nginx server will start to listen port 80 and forward request to uWSGI interface.
+
+### 5. Check Firewall
+Don't forget to open your firewall to accept port80 request.
+```
+$ sudo ufw allow http
+```
 
 ## Usage
 ### Short a URL
@@ -130,16 +145,16 @@ This will give you a short which with your specify url key.
 
 Example.
 ```
-$ curl http://jason88012.ddns.net/shortURL -d "http://google.com"
+$ curl http://1.2.3.4/shortURL -d "http://google.com"
 {
   "State": "Sucess", 
-  "short_url": "http://jason88012.ddns.net/3a7mo0O"
+  "short_url": "http://1.2.3.4/3a7mo0O"
 }
 
-$ curl http://jason88012.ddns.net/specify/abcde -d "http://google.com"
+$ curl http://1.2.3.4/specify/abcde -d "http://google.com"
 {
   "State": "Sucess", 
-  "short_url": "http://jason88012.ddns.net/abcde"
+  "short_url": "http://1.2.3.4/abcde"
 }
 ```
 
