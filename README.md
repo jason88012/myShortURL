@@ -1,5 +1,7 @@
 # Short URL API Server
 A short url API server application installation, configuration and usage tutorial.
+
+The test system is Ubuntu16.04.
 ## System Requirement
 * [Python3](https://www.python.org/downloads/)
 * virtualenv with Python3
@@ -141,7 +143,7 @@ This will give you a short url.
 ```
 $ curl http://[server_name]/specify/[your key] -d "[url]"
 ```
-This will give you a short which with your specify url key.
+This will give you a shorten url which with your specific url key.
 
 Example.
 ```
