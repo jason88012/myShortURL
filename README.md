@@ -163,6 +163,6 @@ $ curl http://1.2.3.4/specify/abcde -d "http://yahoo.com"
 ### Precautions
 * A too long url will return error (over 2000 character).
 * In general mode, If collision occured, It will replace old one.
-* In specify key mode, If use an existed url_key, It will return another usable key.
+* In specify key mode, If use an existed key, It will check the key first and it will give you another usable key if the key is not available.
 * In specify key mode, If the input url and specified key will cause [loop condition](http://xuv.be/Looping-url-shortening.html), It will return error.
-* Please **DO NOT** use short url service to save your important website. The safety issue please [check this.](https://blog.trendmicro.com/are-shortened-urls-safe/)
+* Please **DO NOT** use short url service to save your important website. The safety issue please check [this page](https://blog.trendmicro.com/are-shortened-urls-safe/).
