@@ -107,7 +107,6 @@ class urlShortener():
 			# Given key hasn't been used, insert it.
 			set_res = self.set_to_db(spec_key, url)
 			if set_res["State"] != "Success":
-				print(set_res)
 				return set_res
 
 		return {"State":"Success", 
