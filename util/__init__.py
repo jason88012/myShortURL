@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify, redirect, abort
 
-from .urlShortener import *
+from .urlShortener import urlShortener, check_url_avail
 
 app = Flask(__name__)
 app.debug = True
@@ -12,11 +12,14 @@ def shorten_request():
 	Get the shorten request from client.
 	"""
 	url = request.get_data()
-	result = shortener.add_to_db(url)
-	if result["State"] is "Failed":
+	chk_url_res = check_url_avail(url)
+	if chk_url_res["State"] != "Success":
+		return jsonify(chk_url_res)
+
+	result = shortener.use_rand_key(url)
+	if result["State"] != "Success":
 		return jsonify(result), 400
-	else:
-		return jsonify(result), 200
+	return jsonify(result), 200
 
 @app.route("/specify/<specify_key>", methods=['POST'])
 def specify_url_key(specify_key):
@@ -24,11 +27,14 @@ def specify_url_key(specify_key):
 	Use user specify url_key to generate shorten url
 	"""
 	url = request.get_data()
-	result = shortener.add_to_db(url, url_key=specify_key)
-	if result["State"] is "Failed":
+	chk_url_res = check_url_avail(url)
+	if chk_url_res["State"] != "Success":
+		return jsonify(chk_url_res)
+
+	result = shortener.use_spec_key(url, specify_key)
+	if result["State"] != "Success":
 		return jsonify(result), 400
-	else:
-		return jsonify(result), 200
+	return jsonify(result), 200
 
 @app.route("/<url_key>")
 def redirect_to_url(url_key):
@@ -44,8 +50,12 @@ def redirect_to_url(url_key):
 
 @app.route("/")
 def main():
-	return jsonify("Test")
-
+	"""
+	Guide page
+	"""
+	return "A short url api service."
+"""
 if __name__ == '__main__':
 	# Test with Flask development server
 	app.run(host='127.0.0.1', port=8080)
+"""
