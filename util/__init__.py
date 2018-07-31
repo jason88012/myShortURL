@@ -36,6 +36,18 @@ def specify_url_key(specify_key):
 		return jsonify(result), 400
 	return jsonify(result), 200
 
+@app.route("delete/<key>", methods=['POST'])
+def remove_key(key):
+	"""
+	remove existed key
+	"""
+	if shortener.get_from_db(key) is None:
+		return jsonify({"State":"Failed", 
+						"Error_msg":"No such key in database"})
+	else:
+		result = shortener.rm_from_db(key)
+		return jsonify(result)
+
 @app.route("/<url_key>")
 def redirect_to_url(url_key):
 	"""

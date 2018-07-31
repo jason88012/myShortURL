@@ -50,6 +50,18 @@ class urlShortener():
 			return {"State":"Failed", 
 					"Error_msg": "Insert to database failed"}
 
+	def rm_from_db(self, key):
+		"""
+		remove specify key from database
+		"""
+		try:
+			self.db.delete(key)
+			return {"State":"Success"}
+		except:
+			return {"State":"Failed", 
+					"Error_msg": "Remove from database failed"}
+
+
 	def is_collision(self, url_key, url):
 		"""
 		Check if the given url_key has collision
