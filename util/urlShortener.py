@@ -94,7 +94,7 @@ class urlShortener():
 				return set_res
 
 		return {"State":"Sucess", 
-				"short_url":"%s" % (SERVER_URL_PREFIX+url_key)} 
+				"short_url":"%s/%s" % (SERVER_URL_PREFIX, url_key)} 
 
 	def use_spec_key(self, url, spec_key):
 		"""
@@ -122,5 +122,5 @@ class urlShortener():
 				return set_res
 
 		return {"State":"Success", 
-				"short_url":"%s" % (SERVER_URL_PREFIX+spec_key)} 
+				"short_url":"%s/%s" % (SERVER_URL_PREFIX, spec_key)} 
 

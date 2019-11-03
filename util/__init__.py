@@ -36,7 +36,7 @@ def specify_url_key(specify_key):
 		return jsonify(result), 400
 	return jsonify(result), 200
 
-@app.route("delete/<key>", methods=['POST'])
+@app.route("/delete/<key>", methods=['POST'])
 def remove_key(key):
 	"""
 	remove existed key
